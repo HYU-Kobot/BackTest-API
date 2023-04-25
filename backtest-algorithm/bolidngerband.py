@@ -3,7 +3,7 @@ import pandas as pd
 import quantstats as qs
 
 
-def BackTestBollingerBand(movingAverage, k):  # 이동평균선, 계수(승수)
+def BackTestBollingerBand(movingAverage, k, risk):  # 이동평균선, 계수(승수)
     pd.set_option('display.max_rows', None)
     df = pyupbit.get_ohlcv("KRW-BTC")
 
@@ -16,7 +16,6 @@ def BackTestBollingerBand(movingAverage, k):  # 이동평균선, 계수(승수)
     upper_flag = False
 
     first_balance = 10000000000
-    risk = 0.1
 
     coin_count = [0]
     coin_balance_list = [0]
