@@ -26,8 +26,10 @@ SECRET_KEY = 'django-insecure-m&n8-_nqj6(r7m@w(yormc=6(#g8tzd49)fi19ry7z8a)w75^d
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = [
+    '127.0.0.1',
+    '172.17.75.214'
+]
 
 # Application definition
 
@@ -39,9 +41,13 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'backtest',
+    'rest_framework',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -50,6 +56,11 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+
+CORS_ORIGIN_WHITELIST = ['http://172.17.69.237']
+CORS_ORIGIN_ALLOW_ALL = True
+CORS_ALLOW_CREDENTIALS = True
 
 ROOT_URLCONF = 'kobot.urls'
 
@@ -76,7 +87,14 @@ WSGI_APPLICATION = 'kobot.wsgi.application'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 DATABASES = {
-    
+    'default' : {
+        "ENGINE" : 'django.db.backends.mysql',
+        "NAME" : 'Kobot',
+        "USER" : 'admin',
+        "PASSWORD" : '12341234',
+        "HOST" : 'kobot.cp3jw7rosda8.ap-northeast-1.rds.amazonaws.com',
+        "PORT" : '3306'
+    }
 }
 
 
