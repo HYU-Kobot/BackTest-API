@@ -3,6 +3,8 @@ import pandas as pd
 import quantstats as qs
 import matplotlib
 import uuid
+import math
+
 from kobot.settings import STATICFILES_DIRS
 from kobot.settings import BASE_DIR
 
@@ -51,7 +53,7 @@ def backTestBollingerBand(df, market, upper_moving_average, lower_moving_average
                 total_balance_list.append(coin_balance_list[idx] + money_balance_list[idx])
                 stop_list.remove(loss_dict)
                 loss_flag = True
-                order_list.append({'category': 'SELL', 'market': market, 'amount': loss_dict['coin_count'], 'tradeDate': index, 'price': close * loss_dict['coin_count']})
+                order_list.append({'category': 'SELL', 'market': market, 'amount': loss_dict['coin_count'], 'tradeDate': index, 'price': close})
 
         if close < lower:
             lower_flag = True
@@ -63,7 +65,7 @@ def backTestBollingerBand(df, market, upper_moving_average, lower_moving_average
             money_balance_list.append(money_balance_list[idx - 1] - now_coin * close)
             total_balance_list.append(coin_balance_list[idx] + money_balance_list[idx])
             stop_list.append({'stop_loss_price': stop_loss, 'coin_count': now_coin})
-            order_list.append({'category': 'BUY', 'market': market, 'amount': now_coin, 'tradeDate': index, 'price': close * now_coin})
+            order_list.append({'category': 'BUY', 'market': market, 'amount': now_coin, 'tradeDate': index, 'price': close})
 
             # print(index, "coin 개수 : %20.10f " % coin_count[idx], "coin 자산 : %20.10f " % coin_balance_list[idx],
             #       "현금자산 : %20.10f " % money_balance_list[idx], "총 자산 : %20.10f " % total_balance_list[idx],
@@ -79,7 +81,7 @@ def backTestBollingerBand(df, market, upper_moving_average, lower_moving_average
             money_balance_list.append(coin_count[idx - 1] * close + money_balance_list[idx - 1])
             total_balance_list.append(coin_balance_list[idx] + money_balance_list[idx])
             stop_list = []
-            order_list.append({'category': 'SELL', 'market': market, 'amount': coin_count[idx-1], 'tradeDate': index, 'price' : close * coin_count[idx-1]})
+            order_list.append({'category': 'SELL', 'market': market, 'amount': coin_count[idx-1], 'tradeDate': index, 'price' : close})
 
             # print(index, "coin 개수 : %20.10f " % coin_count[idx], "coin 자산 : %20.10f " % coin_balance_list[idx],
             #       "현금자산 : %20.10f " % money_balance_list[idx], "총 자산 : %20.10f " % total_balance_list[idx],
@@ -102,6 +104,10 @@ def backTestBollingerBand(df, market, upper_moving_average, lower_moving_average
     df['profit'] = df['total_balance'].pct_change()
     
     # 코인종류 -> market, 코인갯수 -> amount, 코인갯수에 따른 원화가격, 거래일자 -> tradePrice, 매수인지 매도인지->category
+    
+    for dic in order_list:
+        dic['amount'] = math.floor(dic['amount'] * 1000) / 1000
+        dic['price'] = math.floor(dic['price'] * 1000) / 1000
     print(order_list)
 
     uuidValue = str(uuid.uuid4())
