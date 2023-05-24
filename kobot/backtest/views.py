@@ -3,51 +3,33 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from rest_framework.renderers import StaticHTMLRenderer
-from .bolidngerband import BackTestBollingerBand
-import os
 
-from backtest.models import Candle
-# Create your views here.
+from backtest.CandleRepository import *
+from backtest.BacktestService import *
+
 def home(request):
     return render(request, 'home.html')
 
-# mtv
-# 
-
-# market, riskRate, std, from, to
 # @api_view(['GET'])
 class Backtest(APIView):
 
-    renderer_classes = [StaticHTMLRenderer]
+    # renderer_classes = [StaticHTMLRenderer]
 
     def get(self, request):
         try :
-            print("##########")
-            movingAverage = int(request.GET['movingAverage'])
             market = request.GET['market']
+            startDate = request.GET['startDate']
+            endDate = request.GET['endDate']
+            upperMovingAverage = int(request.GET['upperMovingAverage'])
+            lowerMovingAverage = int(request.GET['lowerMovingAverage'])
+            upperK = float(request.GET['upperK'])
+            lowerK = float(request.GET['lowerK'])
             riskRate = float(request.GET['riskRate'])
-            std = float(request.GET['std'])
-            
-            filePath = BackTestBollingerBand(movingAverage, std, riskRate)
-            f = open(filePath)
-            body = f.read()
-            os.remove(filePath)
-            
-            print("##########")
-            dic = { 'date_time_kst' : [], 'trade_price' : []}
-            Candle.objects.all()
-            for c in Candle.objects.raw(
-                """
-                Select id, trade_price, date_time_kst
-                    From candle 
-                    Where market = %s and time_unit='DAY'
-                    order by date_time_kst
-                """, [market]):
-                dic['trade_price'].append(float(c.trade_price))
-                dic['date_time_kst'].append(c.date_time_kst.strftime("%Y-%m-%d %H:%M:%S"))
-            response = Response(body)
+            timeFrame = request.GET['timeFrame']
+
+            response = getBody(market, startDate, endDate, upperMovingAverage, lowerMovingAverage, upperK, lowerK, riskRate, timeFrame)
             response["Access-Control-Allow-Origin"] = "*"
-            return response # 파일명 반환 -> 다시 요청
+            return response
         except Exception as e:
             print(e)
             return Response(status=400)

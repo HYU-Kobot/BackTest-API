@@ -24,12 +24,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-m&n8-_nqj6(r7m@w(yormc=6(#g8tzd49)fi19ry7z8a)w75^d'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = [
-    '127.0.0.1',
-    '172.17.75.214'
-]
+ALLOWED_HOSTS = ['*']
 
 # Application definition
 
@@ -57,8 +54,10 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-
-CORS_ORIGIN_WHITELIST = ['http://172.17.69.237']
+CORS_ORIGIN_WHITELIST = (
+    "https://kobot.kro.kr",
+    "http://localhost:3000"
+)
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_CREDENTIALS = True
 
