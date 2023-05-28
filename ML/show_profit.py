@@ -3,14 +3,17 @@ import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 
 # CSV 파일 로드
-res_df = pd.read_csv('res_df.csv')
+res_df = pd.read_csv('res_df_iteration1_20230528.csv')
 
 # 'timestamp'를 datetime 형식으로 변환
 res_df['timestamp'] = pd.to_datetime(res_df['timestamp'])
 
 # 데이터 시각화
+
 fig, ax = plt.subplots()
-ax.plot(res_df['timestamp'], res_df['asset'], label='asset')
+ax.plot(res_df['timestamp'], res_df['asset'], label='Kobot AI')
+print(res_df['prev'].iloc[0])
+ax.plot(res_df['timestamp'], res_df['prev'].div(res_df['prev'].iloc[0])*10000, label='Buy&Hold')
 num_points = len(res_df)
 ax.xaxis.set_major_locator(mdates.DayLocator(interval=num_points//10))  # x 축 눈금 간격 설정 (1일 간격)
 ax.xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m-%d'))  # x 축 눈금 형식 설정 (연-월-일)

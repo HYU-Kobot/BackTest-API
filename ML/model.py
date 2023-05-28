@@ -60,6 +60,7 @@ cols.remove('date_time_kst')
 cols.remove('exchange')
 cols.remove('market')
 cols.remove('time_unit')
+cols.remove('next_trade_price')
 '''
 pred_cols = cols
 pred_cols.remove('high_price')
@@ -70,7 +71,7 @@ pred_cols.remove('trade_price')
 
 # Train+Valid/Test 데이터 분할
 time_now = datetime.datetime(2022,1,1,9,0,0,0)
-time_max = datetime.datetime(2022,12,31,9,0,0,0)
+time_max = datetime.datetime(2022,1,31,9,0,0,0)
 
 position = 0
 asset = 10000
@@ -113,8 +114,8 @@ while time_now <= time_max:
     for i in range(iteration):
 
         # Train/Valid 데이터 분할
-        train, valid = train_test_split(Train,train_size=0.8,random_state=i)
-        X_train, X_valid, y_train, y_valid = train_test_split(train[cols], train['next_trade_price'], test_size=0.2, train_size = 0.8,random_state=i)
+        train, valid = train_test_split(Train,train_size=0.8,shuffle=False)
+        X_train, X_valid, y_train, y_valid = train_test_split(train[cols], train['next_trade_price'], test_size=0.2, train_size = 0.8,shuffle=False)
 
         train_ds = lgb.Dataset(X_train,label=y_train)
         val_ds = lgb.Dataset(X_valid,label=y_valid)
