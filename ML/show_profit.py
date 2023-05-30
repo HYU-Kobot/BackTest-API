@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 
 # CSV 파일 로드
-res_df = pd.read_csv('res_df_iteration1_20230528.csv')
+res_df = pd.read_csv('res_df.csv')
 
 # 'timestamp'를 datetime 형식으로 변환
 res_df['timestamp'] = pd.to_datetime(res_df['timestamp'])
@@ -15,8 +15,8 @@ ax.plot(res_df['timestamp'], res_df['asset'], label='Kobot AI')
 print(res_df['prev'].iloc[0])
 ax.plot(res_df['timestamp'], res_df['prev'].div(res_df['prev'].iloc[0])*10000, label='Buy&Hold')
 num_points = len(res_df)
-ax.xaxis.set_major_locator(mdates.DayLocator(interval=num_points//10))  # x 축 눈금 간격 설정 (1일 간격)
-ax.xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m-%d'))  # x 축 눈금 형식 설정 (연-월-일)
+ax.xaxis.set_major_locator(mdates.DayLocator(interval=num_points//10))  # x 축 눈금 간격 설정 (전체 1/10 간격)
+ax.xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m'))  # x 축 눈금 형식 설정 (연-월)
 plt.xlabel('Date')
 plt.ylabel('My Balance')
 plt.title("Yield graph")

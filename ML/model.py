@@ -6,6 +6,7 @@ from sklearn.model_selection import train_test_split
 import datetime
 from datetime import timedelta
 import lightgbm as lgb
+import random
 
 # 학습중 warning 출력 제거
 import warnings
@@ -71,15 +72,15 @@ pred_cols.remove('trade_price')
 
 # Train+Valid/Test 데이터 분할
 time_now = datetime.datetime(2022,1,1,9,0,0,0)
-time_max = datetime.datetime(2022,1,31,9,0,0,0)
+time_max = datetime.datetime(2023,5,29,9,0,0,0)
 
 position = 0
 asset = 10000
 buy_price = 0
 asset_when_bought = 0
 
-res_df = pd.DataFrame(data={'timestamp': [], 'prev' : [], 'real': [], 'pred': [], 'diff': [], 'position': [], 'asset': []})
-
+res_df = pd.DataFrame(data={'timestamp': [], 'prev': [], 'real': [], 'pred': [], 'diff': [], 'position': [], 'asset': []})
+stop_df = pd.DataFrame(data={'timestamp': [], 'prev': [], 'position':[], 'asset' : []})
 
 while time_now <= time_max:
 
@@ -97,9 +98,16 @@ while time_now <= time_max:
     #print("prev2 trade price, prev trade price, prev low price\n",prev2_trade_price, prev_trade_price, prev_low_price)
     
     if position == 1:
-        #print("prev_low_price : ",prev_low_price, "buy_price : ",buy_price)
         if prev_low_price < buy_price * (1-stop_loss/100):
             asset = asset_when_bought * (1-stop_loss/100)
+            position = 0
+            stop_df = stop_df.append({'timestamp': time_now-datetime.timedelta(days=1)+datetime.timedelta(seconds=random.randint(0, int(datetime.timedelta(hours=24).total_seconds()))),
+                            'prev': prev_low_price,
+                            'position': 0,
+                            'asset' : asset
+                            }, 
+                            ignore_index=True)
+
         else:
             asset += asset * ((prev_trade_price-prev2_trade_price)/prev2_trade_price)
 
@@ -114,8 +122,8 @@ while time_now <= time_max:
     for i in range(iteration):
 
         # Train/Valid 데이터 분할
-        train, valid = train_test_split(Train,train_size=0.8,shuffle=False)
-        X_train, X_valid, y_train, y_valid = train_test_split(train[cols], train['next_trade_price'], test_size=0.2, train_size = 0.8,shuffle=False)
+        train, valid = train_test_split(Train,train_size=0.8,random_state=i)
+        X_train, X_valid, y_train, y_valid = train_test_split(train[cols], train['next_trade_price'], test_size=0.2, train_size = 0.8,random_state=i)
 
         train_ds = lgb.Dataset(X_train,label=y_train)
         val_ds = lgb.Dataset(X_valid,label=y_valid)
@@ -186,3 +194,4 @@ while time_now <= time_max:
 
 print(res_df)
 res_df.to_csv('res_df.csv', index=False)
+stop_df.to_csv('stop_df.csv', index=False)

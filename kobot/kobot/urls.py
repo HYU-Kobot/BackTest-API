@@ -17,10 +17,11 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
-from backtest.views import home,Backtest
+from backtest.views import home,Backtest, AIBacktest
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', home, name='home'),
-    path('api/backtest', Backtest.as_view())
+    path('api/backtest', Backtest.as_view()),
+    path('api/kobotAI', AIBacktest.as_view())
 ]

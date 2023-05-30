@@ -27,7 +27,23 @@ class Backtest(APIView):
             riskRate = float(request.GET['riskRate'])
             timeFrame = request.GET['timeFrame']
 
-            response = getBody(market, startDate, endDate, upperMovingAverage, lowerMovingAverage, upperK, lowerK, riskRate, timeFrame)
+            response = getBollingerBody(market, startDate, endDate, upperMovingAverage, lowerMovingAverage, upperK, lowerK, riskRate, timeFrame)
+            response["Access-Control-Allow-Origin"] = "*"
+            return response
+        except Exception as e:
+            print(e)
+            return Response(status=400)
+
+class AIBacktest(APIView):
+    def get(self, request):
+        try :
+            market = request.GET['market']
+            startDate = request.GET['startDate']
+            endDate = request.GET['endDate']
+            riskRate = float(request.GET['riskRate'])
+            timeFrame = request.GET['timeFrame']
+
+            response = getKobotAiBody(market, startDate, endDate, riskRate, timeFrame)
             response["Access-Control-Allow-Origin"] = "*"
             return response
         except Exception as e:
