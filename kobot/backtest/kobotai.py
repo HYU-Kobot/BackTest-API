@@ -18,6 +18,7 @@ def backTestKobotAi(res_df, stop_df, market, risk, timeFrame):
 
     merged_df = pd.concat([res_df, stop_df])
     merged_df = merged_df.sort_index()
+    merged_df['asset'] = merged_df['asset'] * 1000000
     merged_df['profit'] = merged_df['asset'].pct_change()
 
     position = 0
@@ -29,6 +30,7 @@ def backTestKobotAi(res_df, stop_df, market, risk, timeFrame):
         elif position > row['position']:
             order_list.append({'category': 'SELL', 'market': market, 'amount': row['asset']/row['prev'], 'trade_date': index, 'price' : row['prev']})
         position = row['position']
+    print(order_list)
 
     
     for dic in order_list:
